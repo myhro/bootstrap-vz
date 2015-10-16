@@ -49,7 +49,7 @@ def resolve_tasks(taskset, manifest):
 	                tasks.apt.CleanGoogleRepositoriesAndKeys,
 
 	                image.MoveImage,
-	                tasks.image.CreateTarball,
+	                image.CreateImageTarball,
 	                volume.Delete,
 	                ])
 
