@@ -55,6 +55,13 @@ class BootstrapInformation(object):
 		# that hint at how a command may be made available.
 		self.host_dependencies = {}
 
+		# Dictionary to store information about the image, like its resulting name
+		image_name = self.__parse_image_name(self.manifest, self.manifest_vars)
+		self.image = {
+		    'filename': image_name + '.' + self.volume.extension,
+		    'name': image_name,
+		}
+
 		# Lists of startup scripts that should be installed and disabled
 		self.initd = {'install': {}, 'disable': []}
 
@@ -130,6 +137,12 @@ class BootstrapInformation(object):
 		state = filter_state(self.__dict__)
 		state['__class__'] = self.__module__ + '.' + self.__class__.__name__
 		return state
+
+	def __parse_image_name(self, manifest, manifest_vars):
+		image_name = manifest.image['name'].format(**manifest_vars)
+		# Ensure that we do not use disallowed characters in image name
+		image_name = image_name.lower().replace('.', '-').replace(' ', '-')
+		return image_name
 
 	def __setstate__(self, state):
 		for key in state:

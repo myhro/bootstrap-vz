@@ -10,10 +10,7 @@ class MoveImage(Task):
 
 	@classmethod
 	def run(cls, info):
-		image_name = info.manifest.image['name'].format(**info.manifest_vars)
-		filename = image_name + '.' + info.volume.extension
-
-		destination = os.path.join(info.manifest.bootstrapper['workspace'], filename)
+		destination = os.path.join(info.manifest.bootstrapper['workspace'], info.image['filename'])
 		import shutil
 		shutil.move(info.volume.image_path, destination)
 		info.volume.image_path = destination
@@ -29,23 +26,12 @@ class CreateImageTarball(Task):
 
 	@classmethod
 	def run(cls, info):
-		image_name = info.manifest.image['name'].format(**info.manifest_vars)
-		filename = image_name + '.' + info.volume.extension
+		if not info.image.get('tarball_name', False):
+			tarball_name = info.image['name'] + '.tar.gz'
+			info.image['tarball_name'] = tarball_name
 
-		# Ensure that we do not use disallowed characters in image name
-		image_name = image_name.lower()
-		image_name = image_name.replace('.', '-')
-		image_name = image_name.replace(' ', '-')
-
-		tarball_name = image_name + '.tar.gz'
-		tarball_path = os.path.join(info.manifest.bootstrapper['workspace'], tarball_name)
-
-		# Store image information so it can be referenced later
-		info.image = {
-		    'name': image_name,
-		    'tarball_name': tarball_name,
-		    'tarball_path': tarball_path,
-		}
+		tarball_path = os.path.join(info.manifest.bootstrapper['workspace'], info.image['tarball_name'])
+		info.image['tarball_path'] = tarball_path
 
 		log_check_call(['tar', '--sparse', '-C', info.manifest.bootstrapper['workspace'],
-		                '-caf', tarball_path, filename])
+		                '-caf', tarball_path, info.image['filename']])

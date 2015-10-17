@@ -18,7 +18,7 @@ class AMIName(Task):
 
 	@classmethod
 	def run(cls, info):
-		ami_name = info.manifest.image['name'].format(**info.manifest_vars)
+		ami_name = info.image['name']
 		ami_description = info.manifest.image['description'].format(**info.manifest_vars)
 
 		images = info._ec2['connection'].get_all_images(owners=['self'])
