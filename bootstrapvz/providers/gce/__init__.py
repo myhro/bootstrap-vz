@@ -48,6 +48,7 @@ def resolve_tasks(taskset, manifest):
 	                ssh.DisableSSHPasswordAuthentication,
 	                tasks.apt.CleanGoogleRepositoriesAndKeys,
 
+	                tasks.image.GenerateImageTarballName,
 	                image.MoveImage,
 	                image.CreateImageTarball,
 	                volume.Delete,
